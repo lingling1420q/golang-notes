@@ -460,6 +460,20 @@ var semtable [semTabSize]struct {
 
 用户态的代码对 false sharing 其实关注的比较少。
 
+例：
+sync/pool.go
+
+```go
+type poolLocal struct {
+	poolLocalInternal
+
+	// Prevents false sharing on widespread platforms with
+	// 128 mod (cache line size) = 0 .
+	pad [128 - unsafe.Sizeof(poolLocalInternal{})%128]byte
+}
+```
+
+
 ## runtime 中的 publicationBarrier
 
 TODO
@@ -503,3 +517,5 @@ https://software.intel.com/en-us/articles/detect-and-avoid-memory-bottlenecks#_M
 https://stackoverflow.com/questions/29880015/lock-prefix-vs-mesi-protocol
 
 https://github.com/torvalds/linux/blob/master/Documentation/memory-barriers.txt
+
+http://www.overbyte.com.au/misc/Lesson3/CacheFun.html
